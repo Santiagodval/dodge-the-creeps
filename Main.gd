@@ -6,16 +6,22 @@ var score
 
 func _ready():
 	randomize()
-	new_game()
 
 func game_over():
 	$ScoreTimer.stop()
 	$MobTimer.stop()
+	$HUD.show_game_over()
+	$Music.stop()
+	$DeathSound.play()
 
 func new_game():
 	score = 0
 	$Player.start($StartPosition.position)
 	$StartTimer.start()
+	$HUD.update_score(score)
+	$HUD.show_message("Get Ready")
+	get_tree().call_group("mobs","queue_free")
+	$Music.play()
 	
 
 func _on_ScoreTimer_timeout():
@@ -46,6 +52,7 @@ func _on_MobTimer_timeout():
 	# Choose the velocity for the mob.
 	var velocity = Vector2(rand_range(150.0, 250.0), 0.0)
 	mob.linear_velocity = velocity.rotated(direction)
+	$HUD.update_score(score)
 	
 	# Spawn the mob by adding it to the Main scene.
 	add_child(mob)
